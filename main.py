@@ -43,6 +43,8 @@ class NeuralNetwork:
         self.z4 = np.dot(self.a2, self.W4) + self.b4
         self.classification_output = self.sigmoid(self.z4)
 
+        # print(self.classification_output)
+
         return self.regression_output, self.classification_output
 
     def backward(self, X, y_regression, y_classification, learning_rate):
@@ -50,27 +52,27 @@ class NeuralNetwork:
 
         regression_delta = (regression_output - y_regression) / len(X)
         regression_gradient = np.dot(self.a2.T, regression_delta)
-        self.W3 -= learning_rate * regression_gradient
-        self.b3 -= learning_rate * np.sum(regression_delta, axis=0)
+        self.W3 = self.W3 - learning_rate * regression_gradient
+        self.b3 = self.b3 - learning_rate * np.sum(regression_delta, axis=0)
 
         classification_delta = (classification_output - y_classification) / len(X)
         classification_gradient = np.dot(self.a2.T, classification_delta)
-        self.W4 -= learning_rate * classification_gradient
-        self.b4 -= learning_rate * np.sum(classification_delta, axis=0)
+        self.W4 = self.W4 - learning_rate * classification_gradient
+        self.b4 = self.b4 - learning_rate * np.sum(classification_delta, axis=0)
 
         hidden2_delta = np.dot(classification_delta, self.W4.T) * self.tanh_derivative(
             self.z2
         )
         hidden2_gradient = np.dot(self.a1.T, hidden2_delta)
-        self.W2 -= learning_rate * hidden2_gradient
-        self.b2 -= learning_rate * np.sum(hidden2_delta, axis=0)
+        self.W2 = self.W2 - learning_rate * hidden2_gradient
+        self.b2 = self.b2 - learning_rate * np.sum(hidden2_delta, axis=0)
 
         hidden1_delta = np.dot(hidden2_delta, self.W2.T) * self.sigmoid_derivative(
             self.z1
         )
         hidden1_gradient = np.dot(X.T, hidden1_delta)
-        self.W1 -= learning_rate * hidden1_gradient
-        self.b1 -= learning_rate * np.sum(hidden1_delta, axis=0)
+        self.W1 = self.W1 - learning_rate * hidden1_gradient
+        self.b1 = self.b1 - learning_rate * np.sum(hidden1_delta, axis=0)
 
     def train(self, X, y_regression, y_classification, learning_rate, epochs):
         for i in range(epochs):
@@ -118,10 +120,10 @@ val_regression = y_regression[split_index:]
 learning_rate = 0.1
 epochs = 100
 
-print(train_inputs.shape)
-print(train_classification.shape)
-print(train_classification.shape)
-# print()
+# print(train_inputs.shape)
+# print(train_classification.shape)
+# print(train_classification.shape)
+
 nn.train(train_inputs, train_regression, train_classification, learning_rate, epochs)
 
 regression_output, classification_output = nn.predict(val_inputs)
